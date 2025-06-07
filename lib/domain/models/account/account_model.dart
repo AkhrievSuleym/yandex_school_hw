@@ -1,9 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:yandex_shmr_hw/domain/models/enums/currency.dart';
 
 part 'account_model.freezed.dart';
 part 'account_model.g.dart';
-
-enum Currency { rub, usd, eur }
 
 @freezed
 class AccountModel with _$AccountModel {
