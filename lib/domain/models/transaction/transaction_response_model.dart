@@ -12,6 +12,7 @@ class TransactionResponseModel with _$TransactionResponseModel {
     required int id,
     required AccountBriefModel account,
     required CategoryModel category,
+    required String amount,
     required DateTime transactionDate,
     String? comment,
     required DateTime createdAt,

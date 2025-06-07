@@ -13,7 +13,7 @@ class AccountHistoryModel with _$AccountHistoryModel {
     required ChangeType changeType,
     required AccountStateModel previousState,
     required AccountStateModel newState,
-    required String changeTimestamp,
+    required DateTime changeTimestamp,
     required DateTime createdAt,
   }) = _AccountHistoryModel;
 
