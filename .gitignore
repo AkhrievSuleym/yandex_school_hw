@@ -108,3 +108,5 @@ app.*.map.json
 .env
 *.env
 
+**/*.freezed.dart
+**/*.g.dart
