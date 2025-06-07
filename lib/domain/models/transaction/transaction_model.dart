@@ -18,5 +18,5 @@ class TransactionModel with _$TransactionModel {
   }) = _TransactionModel;
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) =>
-      _$TransactionModel(json);
+      _$TransactionModelFromJson(json);
 }
