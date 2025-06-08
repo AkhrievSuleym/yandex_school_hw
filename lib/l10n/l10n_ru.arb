@@ -1,0 +1,18 @@
+{
+    "@@locale": "ru",
+    "titleExpenses": "Pасходы сегодня",
+    "titleIncome": "Доходы сегодня",
+    "settings": "Настройки",
+    "tabExpenses": "Расходы",
+    "tabIncome": "Доходы",
+    "balance": "Баланс",
+    "articles": "Статьи",
+    "themeDark": "Темная тема",
+    "primaryColor": "Основной цвет",
+    "sounds": "Звуки",
+    "haptics": "Хаптики",
+    "password": "Код пароль",
+    "sync": "Синхронизация",
+    "language": "Язык",
+    "about": "О программе"
+}

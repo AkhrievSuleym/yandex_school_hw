@@ -1,0 +1,18 @@
+{
+    "@@locale": "en",
+    "titleExpenses": "Expenses Today",
+    "titleIncome": "Income Today",
+    "settings": "Settings",
+    "tabExpenses": "Expenses",
+    "tabIncome": "Income",
+    "balance": "Balance",
+    "articles": "Articles",
+    "themeDark": "Dark theme",
+    "primaryColor": "Primary Color",
+    "sounds": "Sounds",
+    "haptics": "Haptics",
+    "password": "Password",
+    "sync": "Synchronization",
+    "language": "Language",
+    "about": "About"
+}
