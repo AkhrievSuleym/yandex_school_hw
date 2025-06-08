@@ -26,6 +26,11 @@ final ThemeData lightTheme = ThemeData(
   iconTheme: IconThemeData(color: AppColors.iconsLight),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     backgroundColor: AppColors.navBarLight,
+    unselectedItemColor: AppColors.iconsLight,
+    selectedItemColor: AppColors.buttonLight,
+    unselectedLabelStyle: TextStyle(color: AppColors.textLight),
+    selectedLabelStyle: TextStyle(color: AppColors.buttonLight),
+    showUnselectedLabels: true,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(backgroundColor: AppColors.buttonLight),
@@ -44,6 +49,10 @@ final ThemeData darkTheme = ThemeData(
   iconTheme: IconThemeData(color: AppColors.iconsDark),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     backgroundColor: AppColors.navBarDark,
+    unselectedItemColor: AppColors.iconsDark,
+    selectedItemColor: AppColors.buttonDark, // Цвет активной иконки
+    unselectedLabelStyle: TextStyle(color: AppColors.textDark),
+    selectedLabelStyle: TextStyle(color: AppColors.buttonDark),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(backgroundColor: AppColors.buttonDark),
