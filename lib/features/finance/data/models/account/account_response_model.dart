@@ -1,13 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:yandex_shmr_hw/features/finance/domain/models/enums/currency.dart';
-import 'package:yandex_shmr_hw/features/finance/domain/models/stat/stat_item.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/stat/stat_item.dart';
 
 part 'account_response_model.freezed.dart';
 part 'account_response_model.g.dart';
 
 @freezed
-class AccountResponse with _$AccountResponse {
-  const factory AccountResponse({
+class AccountResponseModel with _$AccountResponse {
+  const factory AccountResponseModel({
     required int id,
     required String name,
     required String balance,
@@ -18,6 +18,6 @@ class AccountResponse with _$AccountResponse {
     required DateTime updatedAt,
   }) = _AccountResponse;
 
-  factory AccountResponse.fromJson(Map<String, dynamic> json) =>
+  factory AccountResponseModel.fromJson(Map<String, dynamic> json) =>
       _$AccountResponseFromJson(json);
 }

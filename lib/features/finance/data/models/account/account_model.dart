@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:yandex_shmr_hw/features/finance/domain/models/enums/currency.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart';
 
 part 'account_model.freezed.dart';
 part 'account_model.g.dart';

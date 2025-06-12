@@ -1,7 +1,7 @@
 export 'account/account_brief_model.dart';
 export 'account/account_create_model.dart';
 export 'account/account_history_model.dart';
-export 'account/account_history_responce_model.dart';
+export 'account/account_history_response_model.dart';
 export 'account/account_model.dart';
 export 'account/account_response_model.dart';
 export 'account/account_state_model.dart';

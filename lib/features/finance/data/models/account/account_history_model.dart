@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:yandex_shmr_hw/features/finance/domain/models/account/account_state_model.dart';
-import 'package:yandex_shmr_hw/features/finance/domain/models/enums/change_type.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/account/account_state_model.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/enums/change_type.dart';
 
 part 'account_history_model.freezed.dart';
 part 'account_history_model.g.dart';
