@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart';
 
 part 'account_brief_model.freezed.dart';
