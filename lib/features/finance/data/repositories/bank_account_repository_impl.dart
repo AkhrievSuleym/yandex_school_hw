@@ -149,7 +149,7 @@ class BankAccountRepositoryImpl implements BankAccountRepository {
     try {
       // Имитация задержки сети
       await Future.delayed(Duration(milliseconds: 500));
-      if (!_mockAccounts.any((a) => a.id == accountId)) {
+      if (!_mockAccounts.any((account) => account.id == accountId)) {
         return left(Failure('Account not found'));
       }
       final account = _mockAccounts.firstWhere((a) => a.id == accountId);
@@ -194,7 +194,7 @@ class BankAccountRepositoryImpl implements BankAccountRepository {
     try {
       // Имитация задержки сети
       await Future.delayed(Duration(milliseconds: 500));
-      final account = _mockAccounts.firstWhere((a) => a.id == id);
+      final account = _mockAccounts.firstWhere((account) => account.id == id);
       return right(
         AccountResponseModel(
           id: account.id,
@@ -219,7 +219,9 @@ class BankAccountRepositoryImpl implements BankAccountRepository {
   ) async {
     try {
       await Future.delayed(Duration(milliseconds: 500));
-      final index = _mockAccounts.indexWhere((a) => a.id == accountId);
+      final index = _mockAccounts.indexWhere(
+        (account) => account.id == accountId,
+      );
       if (index == -1) {
         return left(Failure('Account not found'));
       }
