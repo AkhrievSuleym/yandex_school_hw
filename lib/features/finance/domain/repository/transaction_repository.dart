@@ -9,16 +9,16 @@ abstract interface class TransactionRepository {
     TransactionRequestModel transaction,
   );
   Future<Either<Failure, TransactionResponseModel>> getTransactionById({
-    String transactionId,
+    required int transactionId,
   });
   Future<Either<Failure, TransactionResponseModel>> updateTransaction(
-    String transactionId,
+    int transactionId,
     TransactionRequestModel transaction,
   );
-  Future<Either<Failure, void>> deleteTransaction(String transactionId);
+  Future<Either<Failure, void>> deleteTransaction(int transactionId);
   Future<Either<Failure, List<TransactionResponseModel>>>
   getAccountTransactions({
-    String accountId,
+    required int accountId,
     DateTime? startDate,
     DateTime? endDate,
   });
