@@ -6,7 +6,7 @@ part 'account_response_model.freezed.dart';
 part 'account_response_model.g.dart';
 
 @freezed
-class AccountResponseModel with _$AccountResponse {
+class AccountResponseModel with _$AccountResponseModel {
   const factory AccountResponseModel({
     required int id,
     required String name,
@@ -16,8 +16,8 @@ class AccountResponseModel with _$AccountResponse {
     required StatItem expenseStats,
     required DateTime createdAt,
     required DateTime updatedAt,
-  }) = _AccountResponse;
+  }) = _AccountResponseModel;
 
   factory AccountResponseModel.fromJson(Map<String, dynamic> json) =>
-      _$AccountResponseFromJson(json);
+      _$AccountResponseModelFromJson(json);
 }

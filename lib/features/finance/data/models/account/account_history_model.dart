@@ -11,7 +11,7 @@ class AccountHistoryModel with _$AccountHistoryModel {
     required int id,
     required int accountId,
     required ChangeType changeType,
-    required AccountStateModel previousState,
+    AccountStateModel? previousState,
     required AccountStateModel newState,
     required DateTime changeTimestamp,
     required DateTime createdAt,
