@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/sort_by.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/history_page_notifier.dart';
-import 'package:yandex_shmr_hw/l10n/app_localizations.dart';
 
 class HistoryPage extends ConsumerStatefulWidget {
   final bool isIncome;

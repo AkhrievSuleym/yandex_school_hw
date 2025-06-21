@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yandex_shmr_hw/core/router/app_router.dart';
 import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
@@ -60,16 +59,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final String currentLocation = GoRouter.of(
-      context,
-    ).routerDelegate.currentConfiguration.uri.path;
-
-    final bool showHistoryIcon =
-        currentLocation.startsWith('/expenses') ||
-        currentLocation.startsWith('/income');
-
-    final bool onHistoryPage = currentLocation.startsWith('/history');
-
     return Scaffold(
       body: widget.child,
       bottomNavigationBar: BottomNavigationBar(
