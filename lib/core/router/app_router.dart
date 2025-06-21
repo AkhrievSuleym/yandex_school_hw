@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/pages/history_page.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/pages/home_page.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/pages/transactions_page.dart';
 
@@ -9,6 +10,7 @@ class AppRouteNames {
   static const String balance = 'balance';
   static const String articles = 'articles';
   static const String settings = 'settings';
+  static const String history = 'history';
 }
 
 final GoRouter appRouter = GoRouter(
@@ -23,11 +25,13 @@ final GoRouter appRouter = GoRouter(
           path: '/expenses',
           name: AppRouteNames.expenses,
           builder: (context, state) => TransactionsPage(isIncome: false),
+          routes: [],
         ),
         GoRoute(
           path: '/income',
           name: AppRouteNames.income,
           builder: (context, state) => TransactionsPage(isIncome: true),
+          routes: [],
         ),
         GoRoute(
           path: '/balance',
@@ -45,6 +49,14 @@ final GoRouter appRouter = GoRouter(
           builder: (context, state) => Center(
             child: Text('Настройки скоро'),
           ), // Экран контента для настроек
+        ),
+        GoRoute(
+          path: '/history',
+          name: AppRouteNames.history,
+          builder: (context, state) {
+            final bool isIncome = state.extra as bool? ?? false;
+            return HistoryPage(isIncome: isIncome);
+          },
         ),
       ],
     ),

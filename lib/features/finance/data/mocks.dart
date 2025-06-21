@@ -1,7 +1,6 @@
-// Моки категорий для использования
+// lib/features/finance/data/mock/transactions_mock_data.dart
 
-//НЕ ОБРАЩАЕМ СИЛЬНО ВНИМАНИЕ НА КОД. ПРОСТО ГЕНЕРАЦИЯ МОКОВ ОТ ИИ))
-
+import 'dart:math'; // <--- Добавляем импорт Random
 import 'package:yandex_shmr_hw/features/finance/data/models/category/category_model.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/transaction/transaction_model.dart';
 
@@ -47,29 +46,23 @@ abstract class CategoriesMockData {
 abstract class TransactionsMockData {
   static final List<TransactionModel> _mockTransactions = [];
   static int _nextId = 1;
+  static final Random _random = Random(); // <--- Инициализируем Random
 
   // Вспомогательная функция для генерации случайной суммы
   static String _generateRandomAmount(bool isIncome) {
-    double amount;
+    double minAmount;
+    double maxAmount;
+
     if (isIncome) {
-      amount =
-          5000 +
-          (30000 *
-              (0.5 +
-                  0.5 *
-                      DateTime.now().millisecondsSinceEpoch %
-                      1000 /
-                      1000)); // От 5000 до 35000
+      minAmount = 1000.0; // Минимальный доход
+      maxAmount = 150000.0; // Максимальный доход
     } else {
-      amount =
-          100 +
-          (5000 *
-              (0.5 +
-                  0.5 *
-                      DateTime.now().millisecondsSinceEpoch %
-                      1000 /
-                      1000)); // От 100 до 5100
+      minAmount = 50.0; // Минимальный расход
+      maxAmount = 15000.0; // Максимальный расход
     }
+
+    // Генерируем случайное число в заданном диапазоне
+    double amount = minAmount + _random.nextDouble() * (maxAmount - minAmount);
     return amount.toStringAsFixed(2);
   }
 

@@ -68,23 +68,9 @@ class _HomePageState extends State<HomePage> {
         currentLocation.startsWith('/expenses') ||
         currentLocation.startsWith('/income');
 
+    final bool onHistoryPage = currentLocation.startsWith('/history');
+
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(_buildAppBarTitle(currentLocation, context)),
-        actions: [
-          if (showHistoryIcon)
-            IconButton(
-              icon: Icon(
-                Icons.history,
-                color: Theme.of(context).iconTheme.color,
-              ),
-              iconSize: 30,
-              onPressed: () {},
-            ),
-        ],
-        actionsPadding: const EdgeInsets.only(right: 5.0),
-      ),
       body: widget.child,
       bottomNavigationBar: BottomNavigationBar(
         items: [
@@ -130,19 +116,5 @@ class _HomePageState extends State<HomePage> {
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  String _buildAppBarTitle(String location, BuildContext context) {
-    if (location.startsWith('/expenses'))
-      return AppLocalizations.of(context)!.titleExpenses;
-    if (location.startsWith('/income'))
-      return AppLocalizations.of(context)!.tabIncome;
-    if (location.startsWith('/balance'))
-      return AppLocalizations.of(context)!.balance;
-    if (location.startsWith('/articles'))
-      return AppLocalizations.of(context)!.articles;
-    if (location.startsWith('/settings'))
-      return AppLocalizations.of(context)!.settings;
-    return AppLocalizations.of(context)!.titleExpenses;
   }
 }
