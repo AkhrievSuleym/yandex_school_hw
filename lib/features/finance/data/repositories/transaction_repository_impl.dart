@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:yandex_shmr_hw/core/error/failure.dart';
+import 'package:yandex_shmr_hw/features/finance/data/mocks.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/account/account_brief_model.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/category/category_model.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart';
@@ -10,38 +11,8 @@ import 'package:yandex_shmr_hw/features/finance/domain/repository/transaction_re
 
 class TransactionRepositoryImpl implements TransactionRepository {
   // Мок транзакций
-  final List<TransactionModel> _mockTransactions = [
-    TransactionModel(
-      id: 1,
-      accountId: 1,
-      categoryId: 1,
-      amount: '500.00',
-      transactionDate: DateTime.parse('2025-06-12T14:14:51.042Z'),
-      comment: 'Зарплата за месяц',
-      createdAt: DateTime.parse('2025-06-12T14:14:51.042Z'),
-      updatedAt: DateTime.parse('2025-06-12T14:14:51.042Z'),
-    ),
-    TransactionModel(
-      id: 2,
-      accountId: 1,
-      categoryId: 5,
-      amount: '150.00',
-      transactionDate: DateTime.parse('2025-06-12T15:00:00.000Z'),
-      comment: 'Продукты',
-      createdAt: DateTime.parse('2025-06-12T15:00:00.000Z'),
-      updatedAt: DateTime.parse('2025-06-12T15:00:00.000Z'),
-    ),
-    TransactionModel(
-      id: 3,
-      accountId: 2,
-      categoryId: 1,
-      amount: '200.00',
-      transactionDate: DateTime.parse('2025-06-12T16:00:00.000Z'),
-      comment: 'Фриланс',
-      createdAt: DateTime.parse('2025-06-12T16:00:00.000Z'),
-      updatedAt: DateTime.parse('2025-06-12T16:00:00.000Z'),
-    ),
-  ];
+  final List<TransactionModel> _mockTransactions =
+      TransactionsMockData.generateTransactions();
 
   // Мок счетов
   final _mockAccounts = [
@@ -60,10 +31,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
   ];
 
   // Мок категорий
-  final _mockCategories = [
-    CategoryModel(id: 1, name: 'Зарплата', emoji: '💰', isIncome: true),
-    CategoryModel(id: 5, name: 'Продукты', emoji: '🍎', isIncome: false),
-  ];
+  final _mockCategories = CategoriesMockData.categories
+      .map((json) => CategoryModel.fromJson(json))
+      .toList();
 
   @override
   Future<Either<Failure, TransactionModel>> addTransaction(
@@ -122,13 +92,12 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }) async {
     try {
       await Future.delayed(Duration(milliseconds: 500));
-      if (_mockAccounts.any((account) => account.id == accountId)) {
+      if (_mockAccounts.all((account) => account.id != accountId)) {
         return left(Failure('Account not found'));
       }
       List<TransactionModel> transactions = _mockTransactions
           .where((transaction) => transaction.accountId == accountId)
           .toList();
-
       if (startDate != null) {
         transactions = transactions
             .where(

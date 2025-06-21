@@ -64,16 +64,24 @@ class _HomePageState extends State<HomePage> {
       context,
     ).routerDelegate.currentConfiguration.uri.path;
 
+    final bool showHistoryIcon =
+        currentLocation.startsWith('/expenses') ||
+        currentLocation.startsWith('/income');
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(_buildAppBarTitle(currentLocation, context)),
         actions: [
-          IconButton(
-            icon: Icon(Icons.history, color: Theme.of(context).iconTheme.color),
-            iconSize: 30,
-            onPressed: () {},
-          ),
+          if (showHistoryIcon)
+            IconButton(
+              icon: Icon(
+                Icons.history,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              iconSize: 30,
+              onPressed: () {},
+            ),
         ],
         actionsPadding: const EdgeInsets.only(right: 5.0),
       ),
