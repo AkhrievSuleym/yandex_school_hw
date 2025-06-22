@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/sort_by.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/history_page_notifier.dart';
 
@@ -36,19 +37,13 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
     );
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            context.pop();
-          },
-        ),
         title: Text("Моя история"),
         centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Icon(Icons.calendar_month),
-          ), // Иконка сортировки
+          ),
         ],
       ),
       body: Column(
@@ -61,7 +56,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                   context,
                   // AppLocalizations.of(context)!.historyStartDate,
                   "Начало",
-                  pageState.startDate, // Используем pageState.startDate
+                  pageState.startDate,
                   (date) => _notifier.setStartDate(date),
                 ),
                 const SizedBox(height: 1),
@@ -69,7 +64,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                   context,
                   // AppLocalizations.of(context)!.historyEndDate,
                   "Конец",
-                  pageState.endDate, // Используем pageState.endDate
+                  pageState.endDate,
                   (date) => _notifier.setEndDate(date),
                 ),
                 const SizedBox(height: 1),
@@ -95,7 +90,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                       Text(
                         '${displayTotal.toStringAsFixed(2)} ₽',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 16,
                           color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
@@ -131,8 +126,8 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                       final transaction = pageState.transactions[index];
                       return Card(
                         margin: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                          horizontal: 10,
+                          vertical: 4,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
@@ -168,16 +163,33 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                '${double.parse(transaction.amount).toStringAsFixed(2)} ₽',
-                                style: TextStyle(
-                                  color: transaction.category.isIncome
-                                      ? Colors.green
-                                      : Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 19,
-                                ),
+                              Column(
+                                children: [
+                                  Text(
+                                    '${double.parse(transaction.amount).toStringAsFixed(2)} ₽',
+                                    style: TextStyle(
+                                      color: transaction.category.isIncome
+                                          ? Colors.green
+                                          : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 19,
+                                    ),
+                                  ),
+                                  Text(
+                                    DateFormat(
+                                      'd MMMM yyyy',
+                                      'ru',
+                                    ).format(transaction.createdAt),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall?.color,
+                                    ),
+                                  ),
+                                ],
                               ),
+
                               const Icon(
                                 Icons.arrow_forward_ios,
                                 size: 16,
@@ -206,10 +218,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
   ) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 12.0,
-      ), // Внутренний отступ
+      padding: const EdgeInsets.only(left: 16.0, right: 5.0, top: 2.0),
       decoration: BoxDecoration(color: const Color(0xFFD4FAE6)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -231,11 +240,8 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
               }
             },
             child: Text(
-              DateFormat(
-                'd MMMM yyyy',
-                Localizations.localeOf(context).languageCode,
-              ).format(date),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              DateFormat('d MMMM yyyy', 'ru').format(date),
+              style: const TextStyle(fontSize: 16, color: Colors.black),
             ),
           ),
         ],

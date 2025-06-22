@@ -84,8 +84,8 @@ abstract class TransactionsMockData {
             comment ??
             category
                 .name, // Используем имя категории, если комментарий не указан
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: transactionDate,
+        updatedAt: transactionDate,
       ),
     );
   }
