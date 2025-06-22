@@ -96,9 +96,9 @@ abstract class TransactionsMockData {
     _nextId = 1;
 
     final today = DateTime.now();
-    final yesterday = today.subtract(
-      const Duration(days: 1),
-    ); // Используем для рандомного времени
+    // final yesterday = today.subtract(
+    //   const Duration(days: 1),
+    // ); // Используем для рандомного времени
     final lastMonth = today.subtract(
       const Duration(days: 35),
     ); // Примерно месяц назад
