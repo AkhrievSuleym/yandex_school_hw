@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:yandex_shmr_hw/core/router/app_router.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/transactions_page_notifier.dart';
-import 'package:yandex_shmr_hw/l10n/app_localizations.dart';
+// import 'package:yandex_shmr_hw/l10n/app_localizations.dart';
 
 class TransactionsPage extends ConsumerWidget {
   final bool isIncome;
@@ -27,9 +26,16 @@ class TransactionsPage extends ConsumerWidget {
       (sum, tr) => sum + double.parse(tr.amount),
     );
 
-    final String title = isIncome
-        ? AppLocalizations.of(context)!.tabIncome
-        : AppLocalizations.of(context)!.titleExpenses;
+    final String title;
+    final String path;
+
+    if (isIncome) {
+      title = "Доходы сегодня";
+      path = "income";
+    } else {
+      title = "Расходы сегодня";
+      path = "expenses";
+    } //AppLocalizations.of(context)!.titleExpenses;
 
     return Scaffold(
       appBar: AppBar(
@@ -40,7 +46,7 @@ class TransactionsPage extends ConsumerWidget {
             icon: Icon(Icons.history, color: Theme.of(context).iconTheme.color),
             iconSize: 30,
             onPressed: () {
-              context.pushNamed(AppRouteNames.history, extra: isIncome);
+              context.go('/$path/history');
             },
           ),
         ],
@@ -53,7 +59,7 @@ class TransactionsPage extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
               vertical: 12.0,
-            ), // Внутренний отступ
+            ),
             decoration: BoxDecoration(color: const Color(0xFFD4FAE6)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,9 +98,7 @@ class TransactionsPage extends ConsumerWidget {
                           ),
                           leading: Text(
                             transaction.category.emoji,
-                            style: const TextStyle(
-                              fontSize: 24,
-                            ), // Увеличим размер для эмодзи
+                            style: const TextStyle(fontSize: 24),
                           ),
                           title: Text(transaction.category.name),
                           trailing: Row(
