@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
 
@@ -7,6 +8,12 @@ class RootPage extends StatelessWidget {
 
   final StatefulNavigationShell navigationShell;
 
+  final String assetDownTrend = 'assets/icons/down_trend.svg';
+  final String assetUpTrend = 'assets/icons/up_trend.svg';
+  final String assetCalculator = 'assets/icons/calculator.svg';
+  final String assetBarChartSide = 'assets/icons/bar_chart_side.svg';
+  final String assetSettings = 'assets/icons/settings.svg';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,27 +21,92 @@ class RootPage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.trending_down),
+            icon: SvgPicture.asset(
+              assetDownTrend,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.unselectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              assetDownTrend,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.selectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
             //AppLocalizations.of(context)!.tabExpenses
             label: "Расходы",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.trending_up),
+            icon: SvgPicture.asset(
+              assetUpTrend,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.unselectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              assetUpTrend,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.selectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
             //AppLocalizations.of(context)!.tabIncome
             label: "Доходы",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.calculate),
+            icon: SvgPicture.asset(
+              assetCalculator,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.unselectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              assetCalculator,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.selectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
             //AppLocalizations.of(context)!.balance
             label: "Счет",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.view_list),
+            icon: SvgPicture.asset(
+              assetBarChartSide,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.unselectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              assetBarChartSide,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.selectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
             //AppLocalizations.of(context)!.articles
             label: "Статьи",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.settings),
+            icon: SvgPicture.asset(
+              assetSettings,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.unselectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              assetSettings,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).bottomNavigationBarTheme.selectedItemColor!,
+                BlendMode.srcIn,
+              ),
+            ),
             //AppLocalizations.of(context)!.settings
             label: "Настройки",
           ),
@@ -44,12 +116,6 @@ class RootPage extends StatelessWidget {
           index,
           initialLocation: index == navigationShell.currentIndex,
         ),
-        selectedItemColor: Theme.of(
-          context,
-        ).bottomNavigationBarTheme.selectedItemColor,
-        unselectedItemColor: Theme.of(
-          context,
-        ).bottomNavigationBarTheme.unselectedItemColor,
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
       ),
