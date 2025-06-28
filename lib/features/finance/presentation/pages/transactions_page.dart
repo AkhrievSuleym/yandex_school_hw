@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/transactions_page_notifier.dart';
-// import 'package:yandex_shmr_hw/l10n/app_localizations.dart';
 
 class TransactionsPage extends ConsumerWidget {
   final bool isIncome;
@@ -12,6 +11,7 @@ class TransactionsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screenState = ref.watch(transactionsPageNotifierProvider);
+    final theme = Theme.of(context);
 
     final filteredTransactions = screenState.transactions.where((transaction) {
       if (isIncome == true) {
@@ -43,7 +43,7 @@ class TransactionsPage extends ConsumerWidget {
         title: Text(title),
         actions: [
           IconButton(
-            icon: Icon(Icons.history, color: Theme.of(context).iconTheme.color),
+            icon: Icon(Icons.history, color: theme.iconTheme.color),
             iconSize: 30,
             onPressed: () {
               context.go('/$path/history');
@@ -56,11 +56,11 @@ class TransactionsPage extends ConsumerWidget {
         children: [
           Container(
             width: double.infinity,
+            color: theme.cardColor,
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
               vertical: 12.0,
             ),
-            decoration: BoxDecoration(color: const Color(0xFFD4FAE6)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

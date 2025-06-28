@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 // import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/sort_by.dart';
@@ -30,6 +32,8 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
   Widget build(BuildContext context) {
     final pageState = ref.watch(historyPageNotifierProvider);
 
+    final String path = widget.isIncome ? "income" : "expenses";
+
     final double displayTotal = pageState.transactions.fold(
       0.0,
       (sum, tr) => sum + double.parse(tr.amount),
@@ -41,7 +45,15 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.calendar_month),
+            child: IconButton(
+              icon: SvgPicture.asset(
+                'assets/icons/analysis.svg',
+                color: Theme.of(context).iconTheme.color,
+              ),
+              onPressed: () {
+                context.push('/analysis_$path');
+              },
+            ),
           ),
         ],
       ),

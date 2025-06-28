@@ -24,15 +24,6 @@ class BankAccountRepositoryImpl implements BankAccountRepository {
       createdAt: DateTime.parse('2025-04-12T13:37:37.576Z'),
       updatedAt: DateTime.parse('2025-05-12T13:37:37.576Z'),
     ),
-    AccountModel(
-      id: 2,
-      userId: 1,
-      name: 'Запасной счёт',
-      balance: '500.00',
-      currency: Currency.rub,
-      createdAt: DateTime.parse('2025-05-12T14:00:00.000Z'),
-      updatedAt: DateTime.parse('2025-06-12T14:00:00.000Z'),
-    ),
   ];
 
   // Мок истории счёта
@@ -55,25 +46,6 @@ class BankAccountRepositoryImpl implements BankAccountRepository {
       ),
       changeTimestamp: DateTime.parse('2025-05-12T13:37:37.576Z'),
       createdAt: DateTime.parse('2025-04-12T13:37:37.576Z'),
-    ),
-    AccountHistoryModel(
-      id: 2,
-      accountId: 2,
-      changeType: ChangeType.creation,
-      previousState: AccountStateModel(
-        id: 1,
-        name: 'Запасной счёт',
-        balance: '100.00',
-        currency: Currency.rub,
-      ),
-      newState: AccountStateModel(
-        id: 2,
-        name: 'Запасной счёт',
-        balance: '500.00',
-        currency: Currency.usd,
-      ),
-      changeTimestamp: DateTime.parse('2025-06-12T14:00:00.000Z'),
-      createdAt: DateTime.parse('2025-05-12T14:00:00.000Z'),
     ),
   ];
 
