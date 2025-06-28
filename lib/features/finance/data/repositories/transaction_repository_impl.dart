@@ -31,7 +31,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
   ];
 
   // Мок категорий
-  final _mockCategories = CategoriesMockData.categories
+  final _mockCategories = CategoriesMockData.mockCategories
       .map((json) => CategoryModel.fromJson(json))
       .toList();
 

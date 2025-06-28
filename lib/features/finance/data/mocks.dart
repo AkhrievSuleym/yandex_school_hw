@@ -1,11 +1,11 @@
 // lib/features/finance/data/mock/transactions_mock_data.dart
 
-import 'dart:math'; // <--- Добавляем импорт Random
+import 'dart:math';
 import 'package:yandex_shmr_hw/features/finance/data/models/category/category_model.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/transaction/transaction_model.dart';
 
 abstract class CategoriesMockData {
-  static final categories = [
+  static final mockCategories = [
     {"id": 1, "name": "Зарплата", "emoji": "💰", "isIncome": true},
     {"id": 2, "name": "Фриланс", "emoji": "💻", "isIncome": true},
     {"id": 3, "name": "Подарки", "emoji": "🎁", "isIncome": true},
@@ -32,12 +32,12 @@ abstract class CategoriesMockData {
     {"id": 24, "name": "Кредиты", "emoji": "💳", "isIncome": false},
   ];
 
-  static List<CategoryModel> get incomeCategories => categories
+  static List<CategoryModel> get incomeCategories => mockCategories
       .where((cat) => cat["isIncome"] == true)
       .map((json) => CategoryModel.fromJson(json))
       .toList();
 
-  static List<CategoryModel> get expenseCategories => categories
+  static List<CategoryModel> get expenseCategories => mockCategories
       .where((cat) => cat["isIncome"] == false)
       .map((json) => CategoryModel.fromJson(json))
       .toList();

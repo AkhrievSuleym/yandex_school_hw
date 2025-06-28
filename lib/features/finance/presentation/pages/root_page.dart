@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:yandex_shmr_hw/core/router/app_router.dart';
 import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
 
 class RootPage extends StatelessWidget {
   const RootPage({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
-
-  final String assetDownTrend = 'assets/icons/down_trend.svg';
-  final String assetUpTrend = 'assets/icons/up_trend.svg';
-  final String assetCalculator = 'assets/icons/calculator.svg';
-  final String assetBarChartSide = 'assets/icons/bar_chart_side.svg';
-  final String assetSettings = 'assets/icons/settings.svg';
 
   @override
   Widget build(BuildContext context) {

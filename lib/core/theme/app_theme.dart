@@ -8,17 +8,20 @@ class AppColors {
   static const navBarLight = Color(0xFFF3EDF7);
   static const buttonLight = Color(0xFF2AE881);
   static const accentLight = Color(0xFFD4FAE6);
+  static const accentGreenLight = Color(0xFFD4FAE6);
 
   static const appBarDark = Color(0xFF1AA864);
   static const backgroundDark = Color(0xFF1C1C1E);
   static const textDark = Color(0xFFE0E0E0);
-  static const iconsDark = Color(0xFFB39DDB);
+  static const iconsDark = Color(0xFFC9E1D8);
   static const navBarDark = Color(0xFF2C2C2E);
   static const buttonDark = Color(0xFF1AA864);
   static const accentDark = Color(0xFF4A4062);
+  static const accentGreenDark = Color(0xFF7AC29C);
 }
 
 final ThemeData lightTheme = ThemeData(
+  cardColor: AppColors.accentGreenLight,
   brightness: Brightness.light,
   primaryColor: AppColors.appBarLight,
   scaffoldBackgroundColor: AppColors.backgroundLight,
@@ -42,6 +45,7 @@ final ThemeData lightTheme = ThemeData(
 );
 
 final ThemeData darkTheme = ThemeData(
+  cardColor: AppColors.accentGreenDark,
   brightness: Brightness.dark,
   primaryColor: AppColors.appBarDark,
   scaffoldBackgroundColor: AppColors.backgroundDark,
