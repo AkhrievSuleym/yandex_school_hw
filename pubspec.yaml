@@ -41,7 +41,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   fpdart: ^1.1.1
   flutter_riverpod: ^2.6.1
-  go_router: ^15.2.3
+  go_router: 16.0.0
   flutter_svg: ^2.2.0
   shake: ^3.0.0
   sensors_plus: ^6.1.1
