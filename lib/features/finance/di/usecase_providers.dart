@@ -5,9 +5,14 @@ import 'package:yandex_shmr_hw/features/finance/domain/usecases/account/get_acco
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/account/update_account_usecase.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/categories/get_all_categories_usecase.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/transactions/get_transactions_usecase.dart';
+import 'package:yandex_shmr_hw/features/finance/domain/usecases/transactions/update_transaction_usecase.dart';
 
 final getTransactionsUseCaseProvider = Provider<GetTransactionsUseCase>(
   (ref) => GetTransactionsUseCase(ref.read(transactionsRepositoryProvider)),
+);
+
+final updateTransactionUseCaseProvider = Provider<UpdateTransactionUseCase>(
+  (ref) => UpdateTransactionUseCase(ref.read(transactionsRepositoryProvider)),
 );
 
 final getAccountByIdUseCaseProvider = Provider<GetAccountByIdUseCase>((ref) {

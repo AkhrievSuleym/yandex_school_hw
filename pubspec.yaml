@@ -34,7 +34,7 @@ dependencies:
     sdk: flutter
   intl: ^0.20.2
   freezed_annotation: ^2.4.1
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -47,8 +47,11 @@ dependencies:
   sensors_plus: ^6.1.1
   logger: ^2.6.0
   shared_preferences: ^2.5.3
-  hive_ce: ^2.11.3
   path_provider: ^2.1.5
+  drift: ^2.27.0
+  drift_flutter: ^0.2.4
+  sqlite3_flutter_libs: ^0.5.34
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -61,10 +64,10 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   intl_utils: ^2.8.8
-  hive_generator: ^2.0.1
+  drift_dev: ^2.26.1
   build_runner: ^2.4.9
   freezed: ^2.4.1
-  json_serializable: ^6.7.1
+  json_serializable: ^6.9.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

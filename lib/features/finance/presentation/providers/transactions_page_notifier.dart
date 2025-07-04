@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yandex_shmr_hw/features/finance/di/usecase_providers.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/transactions/get_transactions_usecase.dart';
-import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/transaction_notifier_state.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/transactions/transaction_notifier_state.dart';
 
 final transactionsPageNotifierProvider =
     StateNotifierProvider<TransactionsPageNotifier, TransactionsPageState>((

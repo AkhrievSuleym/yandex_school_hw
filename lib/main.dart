@@ -1,36 +1,28 @@
+import 'dart:io';
+
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yandex_shmr_hw/core/local_storage/settings_service.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:yandex_shmr_hw/core/router/app_router.dart';
 import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
-import 'package:yandex_shmr_hw/features/finance/di/theme_provider.dart';
+import 'package:yandex_shmr_hw/core/theme/theme_notifier.dart';
+import 'package:yandex_shmr_hw/features/finance/data/db/database.dart';
 import 'package:yandex_shmr_hw/l10n/app_localizations.dart';
 
+late Database database;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize SettingsService
-  final settingsService = SettingsService();
-  await settingsService.init();
 
-  // // Initialize HiveService
-  // final hiveService = HiveService();
-  // await hiveService.init();
+  final appDir = await getApplicationDocumentsDirectory();
+  final dbPath = '${appDir.path}/dogs.db';
+  final dbFile = File(dbPath);
 
-  final container = ProviderContainer(
-    overrides: [
-      settingsServiceProvider.overrideWithValue(settingsService),
-      // hiveServiceProvider.overrideWithValue(hiveService),
-    ],
-  );
+  final dbConnection = NativeDatabase.createBackgroundConnection(dbFile);
+  database = Database(dbConnection);
 
-  // Check if initial data needs to be loaded (e.g., default categories, an initial account)
-  if (!settingsService.getIsInitialDataLoaded()) {
-    // await _loadInitialData(container); // Pass container
-    await settingsService.setIsInitialDataLoaded(true);
-  }
-
-  runApp(ProviderScope(child: const MyApp()));
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
@@ -43,7 +35,7 @@ class MyApp extends ConsumerWidget {
       routerConfig: appRouter,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: themeMode,
+      themeMode: themeMode ? ThemeMode.dark : ThemeMode.light,
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizations.delegate,

@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:yandex_shmr_hw/features/finance/di/usecase_providers.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/categories/get_all_categories_usecase.dart';
-import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/category_page_state.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/category/category_page_state.dart';
 
 final categoryPageNotifierProvider =
     StateNotifierProvider<CategoryPageNotifier, CategoryPageState>((ref) {

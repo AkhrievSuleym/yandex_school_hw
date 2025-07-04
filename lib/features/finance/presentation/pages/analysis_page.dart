@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/ananlysis_page_notifier.dart';
-import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/analysis_page_state.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/transactions/analysis_page_state.dart';
 
 class AnalysisPage extends ConsumerStatefulWidget {
   final bool? isIncome;

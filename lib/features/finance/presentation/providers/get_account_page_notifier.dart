@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yandex_shmr_hw/features/finance/di/usecase_providers.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/account/get_account_usecase.dart';
-import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/get_account_notifier_state.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/account/get_account_notifier_state.dart';
 
 final accountPageNotifierProvider =
     StateNotifierProvider<AccountPageNotifier, AccountPageState>((ref) {
