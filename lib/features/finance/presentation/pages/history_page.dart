@@ -51,7 +51,9 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                 color: Theme.of(context).iconTheme.color,
               ),
               onPressed: () {
-                context.push('/analysis_$path');
+                context.go(
+                  '/${widget.isIncome ? "income" : "expenses"}/history/analysis',
+                );
               },
             ),
           ),

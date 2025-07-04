@@ -59,7 +59,7 @@ class TransactionsByCategoryPage extends StatelessWidget {
                     ),
                     subtitle: Text(
                       DateFormat(
-                        'd MMMM sebagaimana',
+                        'd MMMM yyyy',
                         'ru',
                       ).format(transaction.transactionDate),
                       style: TextStyle(

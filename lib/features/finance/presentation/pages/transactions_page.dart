@@ -123,7 +123,7 @@ class TransactionsPage extends ConsumerWidget {
                             ],
                           ),
                           onTap: () {
-                            // TODO: Навигация для редактирования/деталей операции
+                            context.go('/$path/update/$index');
                           },
                         ),
                       );

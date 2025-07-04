@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:shake/shake.dart';
 import 'package:yandex_shmr_hw/core/extensions/currency_extension.dart';
-import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/edit_account_page_notifier.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/get_account_page_notifier.dart';
-import 'package:yandex_shmr_hw/features/finance/presentation/widgets/animated_spoiler_text.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/widgets/currency_selection_widget.dart';
 
 class AccountPage extends ConsumerStatefulWidget {
@@ -21,79 +18,45 @@ class AccountPage extends ConsumerStatefulWidget {
   ConsumerState<AccountPage> createState() => _AccountPageState();
 }
 
-class _AccountPageState extends ConsumerState<AccountPage> {
-  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
-
-  static const double _faceDownThreshold = -8.5; // Z < -8.5 (ближе к -9.8)
-  static const double _faceUpThreshold = 8.5; // Z > 8.5 (ближе к 9.8)
-  static const double _horizontalTolerance = 2.0; // Отклонение от 0 по X/Y
-  bool _isCurrentlyFaceDown = false;
+class _AccountPageState extends ConsumerState<AccountPage>
+    with SingleTickerProviderStateMixin {
+  bool _isFaceDown = false; // Флаг, указывающий, перевёрнуто ли устройство
+  late StreamSubscription<AccelerometerEvent> _accelerometerSubscription;
+  late AnimationController _animationController;
+  late Animation<double> _blurAnimation;
 
   @override
   void initState() {
     super.initState();
-    _startAccelerometerListening();
-  }
-
-  void _startAccelerometerListening() {
-    _accelerometerSubscription =
-        accelerometerEventStream(
-          samplingPeriod: const Duration(milliseconds: 200),
-        ).listen(
-          // Увеличил samplingPeriod
-          (AccelerometerEvent event) {
-            final double x = event.x;
-            final double y = event.y;
-            final double z = event.z;
-
-            // Проверка, лежит ли устройство относительно горизонтально
-            final bool isHorizontal =
-                x.abs() < _horizontalTolerance &&
-                y.abs() < _horizontalTolerance;
-
-            // Проверка на "лицом вниз"
-            final bool detectedFaceDown =
-                isHorizontal && z < _faceDownThreshold;
-
-            // Проверка на "лицом вверх"
-            final bool detectedFaceUp = isHorizontal && z > _faceUpThreshold;
-
-            // Логика переключения состояния скрытия баланса
-            // Переключаем только при изменении состояния "лицом вниз"
-            if (detectedFaceDown && !_isCurrentlyFaceDown) {
-              _isCurrentlyFaceDown = true;
-              _toggleAndShowSnackbar(true); // Переключить на скрытие
-            } else if (detectedFaceUp && _isCurrentlyFaceDown) {
-              // Если было "лицом вниз" и теперь "лицом вверх", переключаем обратно
-              _isCurrentlyFaceDown = false;
-              _toggleAndShowSnackbar(false); // Переключить на показ
-            }
-          },
-          onError: (e) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Ошибка сенсора: $e')));
-          },
-          cancelOnError: true,
-        );
-  }
-
-  void _toggleAndShowSnackbar(bool isNowBlurred) {
-    ref
-        .read(accountPageNotifierProvider.notifier)
-        .toggleBalanceBlur(); // Используем getAccountPageNotifierProvider
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(isNowBlurred ? 'Баланс скрыт' : 'Баланс показан'),
-        duration: const Duration(seconds: 1),
-      ),
+    _animationController = AnimationController(
+      duration: Duration(milliseconds: 500),
+      vsync: this,
     );
+    _blurAnimation = Tween<double>(begin: 0.0, end: 10.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    // Подписка на события акселерометра
+    _accelerometerSubscription = accelerometerEvents.listen((
+      AccelerometerEvent event,
+    ) {
+      // Проверяем ось Z: если z < -8, устройство перевёрнуто экраном вниз
+      setState(() {
+        _isFaceDown = event.z < -8.0;
+      });
+
+      if (_isFaceDown) {
+        _animationController.forward(); // Скрываем баланс
+      } else {
+        _animationController.reverse(); // Показываем баланс
+      }
+    });
   }
 
   @override
   void dispose() {
-    _accelerometerSubscription?.cancel(); // Отменяем подписку при диспоузе
+    _accelerometerSubscription.cancel();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -210,18 +173,12 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                         context,
                         icon: Icon(Icons.person_2_outlined),
                         label: accountState.account!.name,
-                        valueWidget: AnimatedSpoilerText(
-                          text:
-                              '${accountState.account!.balance} ${accountState.account!.currency.currencySymbol}',
-                          isBlurred: accountState.isBalanceBlurred,
+                        valueWidget: Text(
+                          '${accountState.account!.balance} ${accountState.account!.currency.currencySymbol}',
                           style: theme.textTheme.bodyLarge?.copyWith(
-                            color: accountState.account!.balance.startsWith('-')
-                                ? Colors.redAccent
-                                : Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
-                          blurColor: Colors.black,
-                        ), // Символ валюты
+                        ),
                         onTap: navigateToEditAccount,
                       ),
                       const Divider(),

@@ -5,7 +5,7 @@ import 'package:yandex_shmr_hw/core/extensions/currency_extension.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/edit_account_page_notifier.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/get_account_page_notifier.dart';
-import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/edit_account_notifier.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/account/edit_account_notifier.dart';
 
 class EditAccountPage extends ConsumerWidget {
   final int accountId;

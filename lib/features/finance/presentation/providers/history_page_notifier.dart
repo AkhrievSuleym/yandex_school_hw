@@ -3,7 +3,7 @@ import 'package:yandex_shmr_hw/features/finance/data/models/enums/sort_by.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/transaction/transaction_response_model.dart';
 import 'package:yandex_shmr_hw/features/finance/di/usecase_providers.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/transactions/get_transactions_usecase.dart';
-import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/history_notifier_state.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/transactions/history_notifier_state.dart';
 
 final historyPageNotifierProvider =
     StateNotifierProvider<HistoryPageNotifier, HistoryPageState>((ref) {

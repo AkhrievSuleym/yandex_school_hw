@@ -5,7 +5,7 @@ import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart'
 import 'package:yandex_shmr_hw/features/finance/di/usecase_providers.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/account/get_account_usecase.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/account/update_account_usecase.dart';
-import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/edit_account_notifier.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/account/edit_account_notifier.dart';
 
 final editAccountPageNotifierProvider =
     StateNotifierProvider.family<
