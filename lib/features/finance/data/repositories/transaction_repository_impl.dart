@@ -41,10 +41,13 @@ class TransactionRepositoryImpl implements TransactionRepository {
   ) async {
     try {
       await Future.delayed(Duration(milliseconds: 500));
-      if (_mockAccounts.any((account) => account.id == transaction.accountId)) {
+      if (!_mockAccounts.any(
+        (account) => account.id == transaction.accountId,
+      )) {
         return left(Failure('Account not found'));
       }
-      if (_mockCategories.any(
+
+      if (!_mockCategories.any(
         (category) => category.id == transaction.categoryId,
       )) {
         return left(Failure('Category not found'));
@@ -60,6 +63,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
+
       _mockTransactions.add(newTransaction);
       return right(newTransaction);
     } catch (e) {
@@ -184,10 +188,12 @@ class TransactionRepositoryImpl implements TransactionRepository {
       if (index == -1) {
         return left(Failure('Transaction not found'));
       }
-      if (_mockAccounts.any((account) => account.id == transaction.accountId)) {
+      if (!_mockAccounts.any(
+        (account) => account.id == transaction.accountId,
+      )) {
         return left(Failure('Account not found'));
       }
-      if (_mockCategories.any(
+      if (!_mockCategories.any(
         (category) => category.id == transaction.categoryId,
       )) {
         return left(Failure('Category not found'));
@@ -203,6 +209,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         updatedAt: DateTime.now(),
       );
       _mockTransactions[index] = updatedTransaction;
+
       final account = _mockAccounts.firstWhere(
         (acc) => acc.id == transaction.accountId,
       );
@@ -221,6 +228,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       );
       return right(response);
     } catch (e) {
+      print("we are here4");
       return left(Failure(e.toString()));
     }
   }

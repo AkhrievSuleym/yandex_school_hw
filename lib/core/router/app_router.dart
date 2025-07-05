@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/transaction/transaction_response_model.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/pages/account_page.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/pages/add_transaction_page.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/pages/category_page.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/pages/root_page.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/pages/transactions_by_category_page.dart';
@@ -60,6 +61,15 @@ final GoRouter appRouter = GoRouter(
                     );
                   },
                 ),
+                GoRoute(
+                  path: 'add',
+                  pageBuilder: (context, state) {
+                    return MaterialPage(
+                      child: AddTransactionPage(isIncome: false),
+                      fullscreenDialog: true,
+                    );
+                  },
+                ),
               ],
             ),
           ],
@@ -83,6 +93,30 @@ final GoRouter appRouter = GoRouter(
                           const AnalysisPage(isIncome: true),
                     ),
                   ],
+                ),
+                GoRoute(
+                  path: 'update/:transactionId',
+                  pageBuilder: (context, state) {
+                    final transactionId = int.parse(
+                      state.pathParameters['transactionId']!,
+                    );
+                    return MaterialPage(
+                      child: UpdateTransactionPage(
+                        transactionId: transactionId,
+                        isIncome: true,
+                      ),
+                      fullscreenDialog: true,
+                    );
+                  },
+                ),
+                GoRoute(
+                  path: 'add',
+                  pageBuilder: (context, state) {
+                    return MaterialPage(
+                      child: AddTransactionPage(isIncome: true),
+                      fullscreenDialog: true,
+                    );
+                  },
                 ),
               ],
             ),
