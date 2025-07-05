@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/ananlysis_page_notifier.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/transactions/analysis_page_state.dart';
+import 'package:pie_chart_feature/pie_chart_feature.dart';
 
 class AnalysisPage extends ConsumerStatefulWidget {
   final bool? isIncome;
@@ -25,6 +26,51 @@ class _AnalysisPageState extends ConsumerState<AnalysisPage> {
     );
   }
 
+  List<PieChartSectionDataConfig> _generateChartData(
+    AnalysisPageState pageState,
+  ) {
+    if (pageState.groupedTransactions.isEmpty) {
+      return [];
+    }
+
+    final totalAmount = pageState.groupedTransactions.fold(
+      0.0,
+      (sum, item) => sum + item.totalAmount,
+    );
+    if (totalAmount == 0) {
+      return []; // Избегаем деления на ноль
+    }
+
+    // Список цветов для секций графика
+    final List<Color> chartColors = [
+      Colors.blue,
+      Colors.green,
+      Colors.red,
+      Colors.orange,
+      Colors.purple,
+      Colors.yellow,
+      Colors.teal,
+      Colors.cyan,
+    ];
+
+    return pageState.groupedTransactions.asMap().entries.map((entry) {
+      final index = entry.key;
+      final groupedItem = entry.value;
+      final percentage = (groupedItem.totalAmount / totalAmount * 100);
+      final color =
+          chartColors[index %
+              chartColors.length]; // Циклическое использование цветов
+
+      return PieChartSectionDataConfig(
+        value: groupedItem.totalAmount,
+        title:
+            '${percentage.toStringAsFixed(0)}%', // Процент без десятичных знаков
+        color: color,
+        tooltipLabel: groupedItem.category.name,
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final pageState = ref.watch(analysisPageNotifierProvider(widget.isIncome));
@@ -33,6 +79,10 @@ class _AnalysisPageState extends ConsumerState<AnalysisPage> {
     final double displayTotal = pageState.groupedTransactions.fold(
       0.0,
       (sum, groupedTr) => sum + groupedTr.totalAmount,
+    );
+
+    final List<PieChartSectionDataConfig> chartData = _generateChartData(
+      pageState,
     );
 
     return Scaffold(
@@ -46,7 +96,7 @@ class _AnalysisPageState extends ConsumerState<AnalysisPage> {
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
       ),
@@ -102,16 +152,32 @@ class _AnalysisPageState extends ConsumerState<AnalysisPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 200), // Место для графика
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 300, // Высота для графика
+                  child: Center(
+                    child: pageState.isLoading
+                        ? const CircularProgressIndicator()
+                        : pageState.error != null
+                        ? Text('Ошибка: ${pageState.error!.message}')
+                        : AnimatedPieChart(
+                            data: chartData,
+                            radius: 80, // Радиус графика
+                            centerValueText:
+                                'Всего\n${displayTotal.toStringAsFixed(2)} ₽',
+                            centerTextStyle: theme.textTheme.titleLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                          ),
+                  ),
+                ),
               ],
             ),
           ),
           Expanded(
-            child: pageState.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : pageState.error != null
-                ? Center(child: Text('Ошибка: ${pageState.error!.message}'))
-                : pageState.groupedTransactions.isEmpty
+            child: pageState.groupedTransactions.isEmpty
                 ? const Center(
                     child: Text('Нет данных для выбранного периода.'),
                   )
@@ -119,10 +185,14 @@ class _AnalysisPageState extends ConsumerState<AnalysisPage> {
                     itemCount: pageState.groupedTransactions.length,
                     itemBuilder: (context, index) {
                       final groupedItem = pageState.groupedTransactions[index];
+                      final color = _getChartColor(
+                        index,
+                      ); // Используем тот же цвет, что и в графике
                       return _CategoryGroupListItem(
                         groupedItem: groupedItem,
                         theme: theme,
                         isIncome: widget.isIncome,
+                        itemColor: color, // Передаем цвет в List Item
                       );
                     },
                   ),
@@ -130,6 +200,20 @@ class _AnalysisPageState extends ConsumerState<AnalysisPage> {
         ],
       ),
     );
+  }
+
+  Color _getChartColor(int index) {
+    final List<Color> chartColors = [
+      Colors.blue,
+      Colors.green,
+      Colors.red,
+      Colors.orange,
+      Colors.purple,
+      Colors.yellow,
+      Colors.teal,
+      Colors.cyan,
+    ];
+    return chartColors[index % chartColors.length];
   }
 
   Widget _buildDateRow(
@@ -185,11 +269,13 @@ class _CategoryGroupListItem extends StatelessWidget {
   final GroupedCategoryTransactions groupedItem;
   final ThemeData theme;
   final bool? isIncome;
+  final Color itemColor;
 
   const _CategoryGroupListItem({
     required this.groupedItem,
     required this.theme,
     required this.isIncome,
+    required this.itemColor,
   });
 
   @override
@@ -208,9 +294,20 @@ class _CategoryGroupListItem extends StatelessWidget {
           horizontal: 16.0,
           vertical: 12.0,
         ),
-        leading: Text(
-          groupedItem.category.emoji,
-          style: const TextStyle(fontSize: 28),
+        leading: Container(
+          // Оборачиваем emoji в контейнер для цвета
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            color: itemColor.withOpacity(0.2), // Слегка прозрачный фон
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Center(
+            child: Text(
+              groupedItem.category.emoji,
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
         ),
         title: Text(
           groupedItem.category.name,

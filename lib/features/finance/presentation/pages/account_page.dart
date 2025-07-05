@@ -1,13 +1,17 @@
 import 'dart:async';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:yandex_shmr_hw/core/extensions/currency_extension.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/balance_data_point.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/edit_account_page_notifier.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/get_account_page_notifier.dart';
+import 'package:yandex_shmr_hw/features/finance/presentation/providers/states/account/get_account_notifier_state.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/widgets/currency_selection_widget.dart';
 
 class AccountPage extends ConsumerStatefulWidget {
@@ -51,6 +55,11 @@ class _AccountPageState extends ConsumerState<AccountPage>
         _animationController.reverse(); // Показываем баланс
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(accountPageNotifierProvider.notifier)
+          .loadAccountDetails(accountId: 1); // Предполагаем ID 1
+    });
   }
 
   @override
@@ -65,6 +74,11 @@ class _AccountPageState extends ConsumerState<AccountPage>
     final accountState = ref.watch(accountPageNotifierProvider);
     final accountNotifier = ref.read(accountPageNotifierProvider.notifier);
     final theme = Theme.of(context);
+
+    final List<BalanceDataPoint> chartData = accountState.chartBalanceData;
+    final ChartPeriod selectedChartPeriod = accountState.selectedChartPeriod;
+    final bool isChartLoading = accountState.isChartLoading;
+    final String? chartErrorMessage = accountState.chartErrorMessage;
 
     void navigateToEditAccount() {
       if (accountState.account != null) {
@@ -200,23 +214,234 @@ class _AccountPageState extends ConsumerState<AccountPage>
                     ],
                   ),
                 ),
-                // Место для графика (пока без реализации)
-                // Expanded(
-                //   child: Container(
-                //     color: AppColors
-                //         .background, // Фоновый цвет остальной части экрана
-                //     child: Center(
-                //       child: Text(
-                //         'Место для графика',
-                //         style: theme.textTheme.bodyMedium?.copyWith(
-                //           color: AppColors.textSecondary,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ToggleButtons(
+                              isSelected: [
+                                selectedChartPeriod == ChartPeriod.daily,
+                                selectedChartPeriod == ChartPeriod.monthly,
+                              ],
+                              onPressed: (int index) {
+                                if (index == 0) {
+                                  accountNotifier.setSelectedChartPeriod(
+                                    ChartPeriod.daily,
+                                  );
+                                } else {
+                                  accountNotifier.setSelectedChartPeriod(
+                                    ChartPeriod.monthly,
+                                  );
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(8.0),
+                              selectedColor: Colors.white,
+                              fillColor: theme.colorScheme.primary,
+                              color: theme.colorScheme.primary,
+                              children: const <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                  ),
+                                  child: Text('Дни'),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                  ),
+                                  child: Text('Месяцы'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Expanded(
+                          child: isChartLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : chartErrorMessage != null
+                              ? Center(
+                                  child: Text(
+                                    'Ошибка загрузки графика: $chartErrorMessage',
+                                  ),
+                                )
+                              : chartData.isEmpty
+                              ? const Center(
+                                  child: Text('Нет данных для графика.'),
+                                )
+                              : BarChart(
+                                  _buildBarChartData(
+                                    chartData,
+                                    theme,
+                                    selectedChartPeriod,
+                                    accountState.account!.currency,
+                                  ),
+                                  swapAnimationDuration: const Duration(
+                                    milliseconds: 500,
+                                  ),
+                                  swapAnimationCurve: Curves.easeOut,
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
+    );
+  }
+
+  // Метод для построения данных BarChart (изменили сигнатуру, чтобы принимать ChartPeriod)
+  BarChartData _buildBarChartData(
+    List<BalanceDataPoint> data,
+    ThemeData theme,
+    ChartPeriod selectedPeriod,
+    Currency currency,
+  ) {
+    // Находим минимальный и максимальный баланс для корректного масштабирования оси Y
+    double minBalance = data
+        .map((e) => e.amount)
+        .reduce((a, b) => a < b ? a : b);
+    double maxBalance = data
+        .map((e) => e.amount)
+        .reduce((a, b) => a > b ? a : b);
+
+    final double yAxisMin = minBalance < 0 ? minBalance * 1.1 : 0;
+    final double yAxisMax = maxBalance > 0 ? maxBalance * 1.1 : 0;
+
+    double horizontalInterval = (maxBalance - minBalance).abs() / 4;
+    if (horizontalInterval < 100 && horizontalInterval != 0)
+      horizontalInterval = 100;
+    if (horizontalInterval == 0 && maxBalance != 0)
+      horizontalInterval = maxBalance / 4;
+    if (horizontalInterval == 0 && minBalance != 0)
+      horizontalInterval = minBalance.abs() / 4;
+    if (horizontalInterval == 0)
+      horizontalInterval = 1000; // Для случая если все значения 0
+
+    return BarChartData(
+      alignment: BarChartAlignment.spaceAround,
+      maxY: yAxisMax,
+      minY: yAxisMin,
+      barTouchData: BarTouchData(
+        enabled: true,
+        touchTooltipData: BarTouchTooltipData(
+          getTooltipColor: (group) =>
+              Colors.black.withOpacity(0.7), // Теперь это функция
+          tooltipBorderRadius: BorderRadius.circular(8.0),
+          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+            final double value = rod.toY;
+            final DateTime date = data[groupIndex].date;
+            final DateFormat formatter = selectedPeriod == ChartPeriod.daily
+                ? DateFormat('dd.MM.yyyy')
+                : DateFormat('MM.yyyy');
+
+            final String formattedValue = NumberFormat.currency(
+              locale: 'ru_RU',
+              symbol: currency.currencySymbol,
+              decimalDigits: 2,
+            ).format(value);
+
+            return BarTooltipItem(
+              '${formatter.format(date)}\n',
+              const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+              children: <TextSpan>[
+                TextSpan(
+                  text: formattedValue,
+                  style: TextStyle(
+                    color: value >= 0 ? Colors.greenAccent : Colors.redAccent,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, meta) {
+              final int index = value.toInt();
+              if (index < 0 || index >= data.length) {
+                return const Text('');
+              }
+              final DateTime date = data[index].date;
+              final DateFormat formatter = selectedPeriod == ChartPeriod.daily
+                  ? DateFormat('dd.MM')
+                  : DateFormat('MMM');
+
+              return SideTitleWidget(
+                space: 4.0,
+                meta: meta,
+                child: Text(
+                  formatter.format(date),
+                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                ),
+              );
+            },
+            reservedSize: 22,
+          ),
+        ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+
+            getTitlesWidget: (value, meta) {
+              return Text(
+                NumberFormat.compact(locale: 'ru_RU').format(value),
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
+              );
+            },
+            reservedSize: 32,
+          ),
+        ),
+        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+      ),
+      gridData: FlGridData(
+        show: true,
+        drawHorizontalLine: true,
+        drawVerticalLine: true,
+        horizontalInterval: horizontalInterval,
+        verticalInterval: 1,
+        getDrawingHorizontalLine: (value) =>
+            FlLine(color: Colors.grey.withOpacity(0.3), strokeWidth: 0.5),
+        getDrawingVerticalLine: (value) =>
+            FlLine(color: Colors.grey.withOpacity(0.3), strokeWidth: 0.5),
+      ),
+      barGroups: data.asMap().entries.map((entry) {
+        final index = entry.key;
+        final dataPoint =
+            entry.value; // Имя переменной изменено с 'data' на 'dataPoint'
+        final isPositive = dataPoint.amount >= 0;
+        final Color barColor = isPositive ? Colors.green : Colors.red;
+
+        return BarChartGroupData(
+          x: index,
+          barRods: [
+            BarChartRodData(
+              toY: dataPoint.amount,
+              color: barColor,
+              width: selectedPeriod == ChartPeriod.daily ? 5 : 10,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ],
+        );
+      }).toList(),
     );
   }
 

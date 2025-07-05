@@ -114,15 +114,6 @@ class RootPage extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor:
-            Theme.of(
-              context,
-            ).elevatedButtonTheme.style?.backgroundColor?.resolve({}) ??
-            AppColors.buttonLight,
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }

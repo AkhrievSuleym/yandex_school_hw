@@ -16,11 +16,11 @@ class CategoryPageNotifier extends StateNotifier<CategoryPageState> {
 
   CategoryPageNotifier(this._getAllCategories) : super(CategoryPageState()) {
     // Используем обычный класс
-    _loadCategories();
+    loadCategories();
   }
   Logger logger = Logger();
 
-  Future<void> _loadCategories() async {
+  Future<void> loadCategories() async {
     state = state.copyWith(isLoading: true, error: null);
     final result = await _getAllCategories();
 

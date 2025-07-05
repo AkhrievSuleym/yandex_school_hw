@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
 import 'package:yandex_shmr_hw/features/finance/presentation/providers/transactions_page_notifier.dart';
 
 class TransactionsPage extends ConsumerWidget {
@@ -90,6 +91,7 @@ class TransactionsPage extends ConsumerWidget {
                     itemCount: filteredTransactions.length,
                     itemBuilder: (context, index) {
                       final transaction = filteredTransactions[index];
+
                       return Card(
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
@@ -123,7 +125,9 @@ class TransactionsPage extends ConsumerWidget {
                             ],
                           ),
                           onTap: () {
-                            context.go('/$path/update/$index');
+                            context.go(
+                              '/$path/update/${filteredTransactions[index].id}',
+                            );
                           },
                         ),
                       );
@@ -131,6 +135,17 @@ class TransactionsPage extends ConsumerWidget {
                   ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.go("/$path/add");
+        },
+        backgroundColor:
+            Theme.of(
+              context,
+            ).elevatedButtonTheme.style?.backgroundColor?.resolve({}) ??
+            AppColors.buttonLight,
+        child: const Icon(Icons.add),
       ),
     );
   }
