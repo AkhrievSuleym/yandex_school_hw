@@ -416,7 +416,6 @@ class BankAccountRepositoryImpl implements BankAccountRepository {
         }
       }
 
-      //  Получаем текущий счет для определения начального баланса
       final account = await _localDatasource.getAccountById(accountId);
       if (account == null) {
         return left(Failure('Счет не найден для получения истории баланса.'));
@@ -425,7 +424,6 @@ class BankAccountRepositoryImpl implements BankAccountRepository {
       // Парсим начальный баланс
       final initialBalance = double.tryParse(account.balance) ?? 0.0;
 
-      // Фильтруем и сортируем историю по дате изменения
       final filteredAndSortedHistory =
           allHistory.where((h) => h.accountId == accountId).toList()
             ..sort((a, b) => a.changeTimestamp.compareTo(b.changeTimestamp));
