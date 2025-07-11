@@ -12,8 +12,8 @@ class AccountResponseModel with _$AccountResponseModel {
     required String name,
     required String balance,
     required Currency currency,
-    required StatItem incomeStats,
-    required StatItem expenseStats,
+    required List<StatItem> incomeStats,
+    required List<StatItem> expenseStats,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _AccountResponseModel;
