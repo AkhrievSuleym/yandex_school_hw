@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,6 +10,7 @@ import 'package:yandex_shmr_hw/core/router/app_router.dart';
 import 'package:yandex_shmr_hw/core/theme/app_theme.dart';
 import 'package:yandex_shmr_hw/core/theme/theme_notifier.dart';
 import 'package:yandex_shmr_hw/features/finance/data/db/database.dart';
+import 'package:yandex_shmr_hw/features/finance/data/local_datasource/account_local_datasource.dart';
 import 'package:yandex_shmr_hw/l10n/app_localizations.dart';
 
 late Database database;
@@ -21,6 +23,9 @@ void main() async {
 
   final dbConnection = NativeDatabase.createBackgroundConnection(dbFile);
   database = Database(dbConnection);
+  final accountLocalDatasource = AccountLocalDatasource(database);
+
+  await dotenv.load(fileName: ".env");
 
   runApp(ProviderScope(child: MyApp()));
 }

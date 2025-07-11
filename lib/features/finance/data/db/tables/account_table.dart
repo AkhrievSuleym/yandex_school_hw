@@ -8,4 +8,7 @@ class AccountTable extends Table {
   TextColumn get currency => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+
+  IntColumn get serverId => integer().nullable()();
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
 }
