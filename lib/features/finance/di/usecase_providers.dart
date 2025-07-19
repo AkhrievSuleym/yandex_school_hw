@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yandex_shmr_hw/features/finance/di/bank_account_providers.dart';
-import 'package:yandex_shmr_hw/features/finance/di/transactions_providers.dart';
+import 'package:yandex_shmr_hw/features/finance/di/repository_providers.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/account/get_account_history.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/account/get_account_usecase.dart';
 import 'package:yandex_shmr_hw/features/finance/domain/usecases/account/update_account_usecase.dart';

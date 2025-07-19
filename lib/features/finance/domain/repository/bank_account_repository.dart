@@ -8,7 +8,7 @@ import 'package:yandex_shmr_hw/features/finance/data/models/account/account_upda
 import 'package:yandex_shmr_hw/features/finance/data/models/balance_data_point.dart';
 
 abstract interface class BankAccountRepository {
-  Future<Either<Failure, List<AccountModel>>> getAllBankAccounts();
+  // Future<Either<Failure, List<AccountModel>>> getAllBankAccounts();
   Future<Either<Failure, AccountModel>> addBankAccount(
     AccountCreateModel requestNewAccount,
   );

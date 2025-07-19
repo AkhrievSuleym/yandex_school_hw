@@ -1,210 +1,176 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:yandex_shmr_hw/features/finance/data/db/database.dart';
-import 'package:yandex_shmr_hw/features/finance/data/models/account/account_history_model.dart';
+import 'package:yandex_shmr_hw/features/finance/data/mappers/account_mapper.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/account/account_create_model.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/account/account_model.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/account/account_response_model.dart';
+import 'package:yandex_shmr_hw/features/finance/data/models/account/account_update_model.dart';
 import 'package:yandex_shmr_hw/features/finance/data/models/enums/currency.dart';
-import 'package:yandex_shmr_hw/features/finance/data/models/pending/pending_sync_event_model.dart';
+import 'package:uuid/uuid.dart';
 
 class AccountLocalDatasource {
-  final Database _database;
+  final Database _db;
 
-  AccountLocalDatasource(this._database);
+  AccountLocalDatasource(this._db);
 
-  Future<void> insertAccount(
-    AccountModel account, {
-    int? serverId,
-    bool isSynced = false,
-  }) async {
-    final companion = AccountTableCompanion(
-      id: Value(account.id),
-      name: Value(account.name),
-      balance: Value(account.balance),
-      currency: Value(account.currency.name),
-      createdAt: Value(account.createdAt),
-      updatedAt: Value(account.updatedAt),
-      serverId: Value(serverId), // Новое поле
-      isSynced: Value(isSynced), // Новое поле
-    );
-    await _database.accountTable.insertOne(companion);
-  }
-
-  Future<AccountModel?> getAccountById(int localId) async {
-    final accountDbModel = await (_database.select(
-      _database.accountTable,
-    )..where((tbl) => tbl.id.equals(localId))).getSingleOrNull();
-    if (accountDbModel == null) return null;
-
+  Future<AccountModel> addAccount(AccountCreateModel account) async {
+    final now = DateTime.now();
+    final newDbAccount = await _db
+        .into(_db.accountTable)
+        .insertReturning(
+          AccountTableCompanion.insert(
+            name: account.name,
+            balance: account.balance,
+            currency: account.currency.name, // Сохраняем имя enum
+            createdAt: Value(DateTime.now()),
+            updatedAt: Value(DateTime.now()),
+            isSynced: Value(false), // Изначально не синхронизирован
+          ),
+        );
     return AccountModel(
-      id: accountDbModel.id,
+      id: newDbAccount.id, // Локальный ID
+      name: newDbAccount.name,
+      balance: newDbAccount.balance,
+      currency: Currency.values.byName(newDbAccount.currency),
+      createdAt: newDbAccount.createdAt,
+      updatedAt: newDbAccount.updatedAt,
       userId: 0,
-      name: accountDbModel.name,
-      balance: accountDbModel.balance,
-      currency: Currency.values.firstWhere(
-        (e) => e.name == accountDbModel.currency,
-      ),
-      createdAt: accountDbModel.createdAt,
-      updatedAt: accountDbModel.updatedAt,
     );
   }
 
-  Future<bool> updateAccount(AccountModel account) async {
-    final existingDbModel = await (_database.select(
-      _database.accountTable,
-    )..where((tbl) => tbl.id.equals(account.id))).getSingleOrNull();
-
-    if (existingDbModel == null) {
-      return false;
-    }
-
-    final companion = AccountTableCompanion(
-      id: Value(account.id), // ID для обновления
-      name: Value(account.name),
-      balance: Value(account.balance),
-      currency: Value(account.currency.name),
-      createdAt: Value(account.createdAt),
-      updatedAt: Value(DateTime.now()),
-      serverId: Value(existingDbModel.serverId),
-      isSynced: Value(existingDbModel.isSynced),
+  Future<AccountModel?> getAccountById(int id) async {
+    final dbAccount = await (_db.select(
+      _db.accountTable,
+    )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+    if (dbAccount == null) return null;
+    return AccountModel(
+      id: dbAccount.serverId ?? dbAccount.id,
+      name: dbAccount.name,
+      balance: dbAccount.balance,
+      currency: Currency.values.byName(dbAccount.currency),
+      createdAt: dbAccount.createdAt,
+      updatedAt: dbAccount.updatedAt,
+      userId: 0,
     );
-    final result = await _database
-        .update(_database.accountTable)
-        .replace(companion);
-    return result;
   }
 
-  Future<List<AccountDbModel>> getPendingAccountDbModels() async {
-    return await (_database.select(
-      _database.accountTable,
-    )..where((tbl) => tbl.isSynced.equals(false))).get();
-  }
-
-  Future<void> updateAccountServerId(int localId, int serverId) async {
-    await (_database.update(_database.accountTable)
-          ..where((tbl) => tbl.id.equals(localId)))
-        .write(AccountTableCompanion(serverId: Value(serverId)));
-  }
-
-  Future<void> markAccountDbModelSynced(int localId) async {
-    await (_database.update(_database.accountTable)
-          ..where((tbl) => tbl.id.equals(localId)))
-        .write(const AccountTableCompanion(isSynced: Value(true)));
-  }
-
-  Future<void> insertAccountHistory(
-    AccountHistoryModel history, {
-    int? accountServerId,
-    bool isSynced = false,
-  }) async {
-    final companion = AccountHistoryTableCompanion(
-      id: const Value.absent(),
-      accountId: Value(history.accountId),
-      accountServerId: Value(accountServerId),
-      changeType: Value(history.changeType),
-      previousState: Value(history.previousState),
-      newState: Value(history.newState),
-      changeTimestamp: Value(history.changeTimestamp),
-      createdAt: Value(history.createdAt),
-      isSynced: Value(isSynced),
-    );
-    await _database.insertAccountHistory(companion);
-  }
-
-  Future<List<AccountHistoryModel>> getAccountHistory(int accountId) async {
-    final historyDbModels = await _database.getAccountHistoryForAccount(
-      accountId,
-    );
-    return historyDbModels
-        .map(
-          (dbModel) => AccountHistoryModel(
-            id: dbModel.id,
-            accountId: dbModel.accountId,
-            changeType: dbModel.changeType,
-            previousState: dbModel.previousState,
-            newState: dbModel.newState,
-            changeTimestamp: dbModel.changeTimestamp,
-            createdAt: dbModel.createdAt,
-          ),
-        )
-        .toList();
-  }
-
-  Future<void> updateAccountHistoryServerId(
-    int localAccountId,
-    int newServerId,
+  Future<AccountModel> updateAccount(
+    int accountId,
+    AccountUpdateModel account,
   ) async {
-    await (_database.update(
-      _database.accountHistoryTable,
-    )..where((tbl) => tbl.accountId.equals(localAccountId))).write(
-      AccountHistoryTableCompanion(accountServerId: Value(newServerId)),
-    );
-  }
-
-  /// Помечает записи истории как синхронизированные.
-  Future<void> markAccountHistoryDbModelSynced(int localAccountId) async {
-    await (_database.update(_database.accountHistoryTable)..where(
-          (tbl) =>
-              tbl.accountId.equals(localAccountId) & tbl.isSynced.equals(false),
-        ))
-        .write(const AccountHistoryTableCompanion(isSynced: Value(true)));
-  }
-
-  /// Получает все несинхронизированные записи истории.
-  Future<List<AccountHistoryDbModel>> getPendingAccountHistoryDbModels() async {
-    return await (_database.select(
-      _database.accountHistoryTable,
-    )..where((tbl) => tbl.isSynced.equals(false))).get();
-  }
-
-  Future<void> addPendingSyncEvent(PendingSyncEventModel event) async {
-    final companion = PendingSyncEventTableCompanion(
-      id: const Value.absent(), // Let autoIncrement handle this
-      eventType: Value(event.eventType),
-      localEntityId: Value(event.localEntityId),
-      serverEntityId: Value(event.serverEntityId),
-      payload: Value(event.payload ?? ''),
-      createdAt: Value(event.createdAt),
-      retryCount: Value(event.retryCount),
-      lastError: Value(event.lastError),
-    );
-    await _database.insertPendingSyncEvent(companion);
-  }
-
-  /// Получает все события из очереди синхронизации, отсортированные по времени создания.
-  Future<List<PendingSyncEventModel>> getPendingSyncEvents() async {
-    final dbModels = await _database.getPendingSyncEvents();
-    return dbModels
-        .map(
-          (dbModel) => PendingSyncEventModel(
-            id: dbModel.id,
-            eventType: dbModel.eventType,
-            localEntityId: dbModel.localEntityId,
-            serverEntityId: dbModel.serverEntityId,
-            payload: dbModel.payload,
-            createdAt: dbModel.createdAt,
-            retryCount: dbModel.retryCount,
-            lastError: dbModel.lastError,
+    final now = DateTime.now();
+    final updatedRows =
+        await (_db.update(
+          _db.accountTable,
+        )..where((tbl) => tbl.id.equals(accountId))).writeReturning(
+          AccountTableCompanion(
+            name: Value(account.name),
+            balance: Value(account.balance),
+            currency: Value(account.currency.name),
+            updatedAt: Value(now),
+            isSynced: Value(false), // Помечаем как не синхронизированный
           ),
-        )
-        .toList();
-  }
-
-  /// Удаляет событие из очереди синхронизации по ID.
-  Future<void> deletePendingSyncEvent(int id) async {
-    await _database.deletePendingSyncEvent(id);
-  }
-
-  /// Обновляет событие в очереди синхронизации (например, увеличивает retryCount).
-  Future<void> updatePendingSyncEvent(PendingSyncEventModel event) async {
-    final companion = PendingSyncEventTableCompanion(
-      id: Value(event.id),
-      eventType: Value(event.eventType),
-      localEntityId: Value(event.localEntityId),
-      serverEntityId: Value(event.serverEntityId),
-      payload: Value(event.payload ?? ''),
-      createdAt: Value(event.createdAt),
-      retryCount: Value(event.retryCount),
-      lastError: Value(event.lastError),
+        );
+    if (updatedRows.isEmpty) {
+      throw Exception('Account with ID $accountId not found for update.');
+    }
+    final updatedDbAccount = updatedRows.first;
+    return AccountModel(
+      id: updatedDbAccount.serverId ?? updatedDbAccount.id,
+      name: updatedDbAccount.name,
+      balance: updatedDbAccount.balance,
+      currency: Currency.values.byName(updatedDbAccount.currency),
+      createdAt: updatedDbAccount.createdAt,
+      updatedAt: updatedDbAccount.updatedAt,
+      userId: 0,
     );
-    await _database.updatePendingSyncEvent(companion);
+  }
+
+  Future<List<AccountModel>> getAllAccounts() async {
+    final accounts = await _db.select(_db.accountTable).get();
+    return accounts.map((dbModel) {
+      // Маппинг из AccountDbModel в AccountModel
+      return AccountModel(
+        id:
+            dbModel.serverId ??
+            dbModel.id, // Используем serverId если есть, иначе локальный ID
+        name: dbModel.name,
+        balance: dbModel.balance,
+        currency: Currency.values.byName(dbModel.currency),
+        createdAt: dbModel.createdAt,
+        updatedAt: dbModel.updatedAt,
+        userId: 0,
+      );
+    }).toList();
+  }
+
+  Future<void> updateAccountServerId(int localId, String serverId) async {
+    await (_db.update(
+      _db.accountTable,
+    )..where((tbl) => tbl.id.equals(localId))).write(
+      AccountTableCompanion(
+        serverId: Value(int.parse(serverId)),
+        isSynced: Value(true), // Помечаем как синхронизированный
+      ),
+    );
+  }
+
+  Future<void> clearAndInsertAll(List<AccountModel> accounts) async {
+    await _db.transaction(() async {
+      await _db.delete(_db.accountTable).go(); // Очищаем все
+      for (final account in accounts) {
+        await _db
+            .into(_db.accountTable)
+            .insert(
+              AccountTableCompanion.insert(
+                serverId: Value(account.id),
+                name: account.name,
+                balance: account.balance,
+                currency: account.currency.name,
+                createdAt: Value(account.createdAt),
+                updatedAt: Value(account.updatedAt),
+                isSynced: Value(true),
+              ),
+            );
+      }
+    });
+  }
+
+  Future<void> updateAccountFromResponse(
+    AccountResponseModel remoteAccount,
+  ) async {
+    // Находим соответствующий локальный аккаунт по serverId
+    final existingLocalAccount = await (_db.select(
+      _db.accountTable,
+    )..where((tbl) => tbl.serverId.equals(remoteAccount.id))).getSingleOrNull();
+
+    if (existingLocalAccount != null) {
+      await (_db.update(
+        _db.accountTable,
+      )..where((tbl) => tbl.id.equals(existingLocalAccount.id))).write(
+        AccountTableCompanion(
+          name: Value(remoteAccount.name),
+          balance: Value(remoteAccount.balance),
+          currency: Value(remoteAccount.currency.name),
+          updatedAt: Value(DateTime.now()),
+          isSynced: Value(true), // Считаем, что эти данные синхронизированы
+        ),
+      );
+    }
+    await _db
+        .into(_db.accountTable)
+        .insert(
+          AccountTableCompanion.insert(
+            serverId: Value(remoteAccount.id),
+            name: remoteAccount.name,
+            balance: remoteAccount.balance,
+            currency: remoteAccount.currency.name,
+            createdAt: Value(remoteAccount.createdAt),
+            updatedAt: Value(remoteAccount.updatedAt),
+            isSynced: Value(true), // Считаем, что эти данные синхронизированы
+          ),
+        );
   }
 }

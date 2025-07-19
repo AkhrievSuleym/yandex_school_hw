@@ -7,8 +7,8 @@ class ApiClient {
 
   ApiClient() : dio = Dio() {
     dio.options.baseUrl = dotenv.env['API_BASE_URL']!;
-    dio.options.connectTimeout = const Duration(seconds: 5000); // 5 секунд
-    dio.options.receiveTimeout = const Duration(seconds: 3000); // 3 секунды
+    dio.options.connectTimeout = const Duration(seconds: 10); // 5 секунд
+    dio.options.receiveTimeout = const Duration(seconds: 5); // 3 секунды
 
     dio.interceptors.add(
       InterceptorsWrapper(
@@ -84,5 +84,61 @@ class ApiClient {
   Future<Response> getAccountHistory(String id) async {
     final path = ApiEndpoints.accountHistory.replaceFirst('{id}', id);
     return await dio.get(path);
+  }
+
+  // ---  Методы для Category ---
+  Future<Response> getCategories() async {
+    return await dio.get(ApiEndpoints.categories);
+  }
+
+  Future<Response> getCategoriesByType(bool isIncome) async {
+    final path = ApiEndpoints.categoriesByType.replaceFirst(
+      '{isIncome}',
+      isIncome.toString(),
+    );
+    return await dio.get(path);
+  }
+
+  // ---  Методы для Transaction ---
+  Future<Response> createTransaction(Map<String, dynamic> data) async {
+    return await dio.post(ApiEndpoints.transactions, data: data);
+  }
+
+  Future<Response> getTransaction(String id) async {
+    final path = ApiEndpoints.transactionById.replaceFirst('{id}', id);
+    return await dio.get(path);
+  }
+
+  Future<Response> updateTransaction(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    // Используем transactionById для обновления конкретной транзакции по ID
+    final path = ApiEndpoints.transactionById.replaceFirst('{id}', id);
+    return await dio.put(path, data: data);
+  }
+
+  Future<Response> deleteTransaction(String id) async {
+    // Используем transactionById для удаления конкретной транзакции по ID
+    final path = ApiEndpoints.transactionById.replaceFirst('{id}', id);
+    return await dio.delete(path);
+  }
+
+  Future<Response> getAccountTransactionsByPeriod({
+    required String accountId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    final path = ApiEndpoints.transactionsByAccountPeriod.replaceFirst(
+      '{accountId}',
+      accountId,
+    );
+    return await dio.get(
+      path,
+      queryParameters: {
+        'startDate': startDate.toIso8601String(), // ISO 8601 формат для даты
+        'endDate': endDate.toIso8601String(),
+      },
+    );
   }
 }
